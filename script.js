@@ -2,13 +2,40 @@ let prompt = document.querySelector("#prompt");
 let chatContainer = document.querySelector(".chat-container");
 // let imagebtn = document.querySelector("#image");
 // let imageinput = document.querySelector("#image input")
-const Api_Key = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyDlF0FufXgCmJeZsl7HcbBPHj6B2CJQkZ0"
+// const Api_Key = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyDlF0FufXgCmJeZsl7HcbBPHj6B2CJQkZ0"
+const BASE_URI = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
+
 let submitt = document.getElementById("submitt")
+
+
+
+// 🔹 When any page loads, check API key first
+// 🔹 When any page loads, check API key first
+document.addEventListener("DOMContentLoaded", () => {
+    const currentPage = window.location.pathname;
+    const apiKey = localStorage.getItem("apikey");
+
+    // 1. If an API key exists, and the current page is the form page, redirect to index.
+    if (currentPage.includes("form.html") && apiKey) {
+        window.location.href = "/index.html";
+        return; // Stop execution after redirect
+    }
+
+    // 2. If NO API key exists, and the current page is NOT the form page, redirect to form.
+    // Use 'endsWith' or a more precise check to prevent the infinite loop on form.html itself.
+    if (!apiKey && !currentPage.includes("form.html")) {
+        window.location.href = "/form.html";
+        return; // Stop execution after redirect
+    }
+
+});
+
 
   let user ={
     data : null,
   }
 async function generateResponse(aiChatBox){
+  let apikey = localStorage.getItem("apikey")
   let text = aiChatBox.querySelector(".aichat-area")
 let RequestOption = {
     method : "Post",
@@ -29,7 +56,7 @@ let RequestOption = {
 }
 
 try{
- let response = await fetch(Api_Key, RequestOption)
+ let response = await fetch(`${BASE_URI}?key=${apikey}`, RequestOption)
  let data = await response.json ()
  console.log(data);
  let apiResponse = data.candidates[0].content.parts[0].text.replace(/\*\*(.*?)\*\*/g,"*$1").trim()
